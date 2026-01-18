@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "igptai"
+version = "1.1.0"
+description = "Official Python SDK for the iGPT API"
+authors = ["iGPT <hello@igpt.ai>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://www.igpt.ai/"
+repository = "https://github.com/igptai/igpt-python"
+documentation = "https://docs.igpt.ai"
+keywords = ["igpt", "ai", "igptai", "sdk", "api", "llm", "recall", "datasources"]
+packages = [
+    { include = "igptai", from = "src" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.31.0"
+aiohttp = "^3.9.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
