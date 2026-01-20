@@ -2,6 +2,7 @@ import requests
 from typing import Optional, Generator
 import time
 import json
+from importlib.metadata import version
 
 class _Recall:
     def __init__(self, client: "IGPT"):
@@ -167,10 +168,11 @@ class IGPT:
         self.backoff_factor = max(2, backoff_factor) if isinstance(backoff_factor, int) else 2
         backoff_base_ms = max(100, backoff_base) if isinstance(backoff_base, int) else 100
         self.backoff_base = backoff_base_ms / 1000.0 # 0.1 seconds
+        self._version = version("igptai")
         self.headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}",
-            "X-Client": "igpt-python"
+            "X-Client": f"igpt-python/{self._version}"
         }
         self.recall = _Recall(self)
         self.datasources = _Datasources(self)
