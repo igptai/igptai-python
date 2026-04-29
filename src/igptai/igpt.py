@@ -1,5 +1,5 @@
 import requests
-from typing import Optional, Generator
+from typing import Optional, Generator, Union
 import time
 import json
 from importlib.metadata import version
@@ -9,7 +9,7 @@ class _Recall:
         self._client = client
 
     # ASK
-    def ask(self, user: Optional[str] = None, **kwargs) -> dict:
+    def ask(self, user: Optional[str] = None, **kwargs) -> Union[dict, Generator[dict, None, None]]:
         """
         Generate response based on input and context
 
@@ -192,7 +192,7 @@ class IGPT:
                 elif resp.status_code == 429 or 500 <= resp.status_code < 600: # Server-side error (429 - Too Many Requests) - retry
                     pass
                 else:
-                    return {"error": resp.reason} # Client-side error - don't retry
+                    return {"error": "client_error"} # Client-side error - don't retry
             except requests.exceptions.RequestException: # Network error or timeout - retry
                 pass
 
@@ -228,7 +228,7 @@ class IGPT:
                     elif resp.status_code == 429 or 500 <= resp.status_code < 600:
                         pass
                     else:
-                        yield {"error": resp.reason}
+                        yield {"error": "client_error"}
                         return
             except requests.exceptions.RequestException:
                 pass

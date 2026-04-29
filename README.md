@@ -8,7 +8,7 @@ Official Python SDK for the iGPT API.
 
 ## Requirements
 
-- Python **>= 3.8**
+- Python >= 3.8
 
 ## Install
 
@@ -46,7 +46,9 @@ from igptai import IGPT
 igpt = IGPT(api_key="IGPT_API_KEY")
 
 res = igpt.connectors.authorize(user="user_123", service="spike", scope="messages")
-if res is not None and res.get("error"):
+if res is None:
+    print("No response / request failed")
+elif res.get("error"):
     print("Connection error:", res)
 else:
     print("Open this URL to authorize:", res.get("url"))
@@ -62,7 +64,9 @@ from igptai import IGPT
 igpt = IGPT(api_key="IGPT_API_KEY", user="user_123") # optional default user
 
 res = igpt.recall.ask(input="Summarize key risks, decisions, and next steps from this week's meetings.")
-if res is not None and res.get("error"):
+if res is None:
+    print("No response / request failed")
+elif res.get("error"):
     # No-throw design: handle errors via return value
     print("iGPT error:", res)
 else:
@@ -99,7 +103,7 @@ Authorize, connect, and start indexing a new datasource. [↗](https://docs.igpt
 #### Example: start an authorization flow
 
 ```python
-res = igpt.connectors.authorize(user="user_123", service="spike", scope="messages", redirect_uri="https://yourapp.com/callback", state="optional_state")
+res = igpt.connectors.authorize(service="spike", scope="messages", user="user_123", redirect_uri="https://yourapp.com/callback", state="optional_state")
 print(res)
 ```
 
@@ -108,16 +112,15 @@ print(res)
 
 ### `recall.ask()`
 
-Generate a response based on input and connected context. [↗](https://docs.igpt.ai/docs/api-reference/ask "API reference")
+Generate a response based on the input and related context. [↗](https://docs.igpt.ai/docs/api-reference/ask "API reference")
 
 #### Parameters
 
 * `input` (string, required): The prompt/question to ask.
 * `user` (string, optional if set in constructor): Unique user identifier.
 * `stream` (boolean, optional, default: `false`): If `true`, returns an async iterable stream.
-* `quality` (string, optional): Context engineering quality (e.g., `"cef-1-normal"`). [Read more](https://docs.igpt.ai/docs/concepts/cef).
+* `quality` (string, optional): Context engineering quality (default: `"cef-1-normal"`). [Read more](https://docs.igpt.ai/docs/concepts/cef).
 * `output_format` (string | object, optional):
-
   * `"text"` (default)
   * `"json"`
   * `{ schema: <JSON Schema> }` to enforce a structured output
@@ -146,26 +149,26 @@ output_format = {
     "schema": {
         "type": "object",
         "properties": {
-        "action_items": {
-            "type": "array",
-            "description": "List of action items",
-            "items": {
-            "type": "object",
-            "properties": {
-                "title": { "type": "string", "description": "Short summary of the action item" },
-                "owner": { "type": "string", "description": "Person responsible for the action item" },
-                "due_date": { "type": "string", "format": "date", "description": "Expected completion date" }
-            },
-            "required": ["title", "owner", "due_date"],
-            "additionalProperties": False
+            "action_items": {
+                "type": "array",
+                "description": "List of action items",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "title": { "type": "string", "description": "Short summary of the action item" },
+                        "owner": { "type": "string", "description": "Person responsible for the action item" },
+                        "due_date": { "type": "string", "format": "date", "description": "Expected completion date" }
+                    },
+                    "required": ["title", "owner", "due_date"],
+                    "additionalProperties": False
+                }
             }
-        }
         },
         "required": ["action_items"],
         "additionalProperties": False
     }
 }
-res = igpt.recall.ask(output_format=output_format, input="Open action items from yesterday’s board meeting", quality: "cef-1-normal")
+res = igpt.recall.ask(output_format=output_format, input="Extract all action items from yesterday’s board meeting.", quality: "cef-1-normal")
 print(res)
 ```
 
@@ -176,7 +179,7 @@ print(res)
   "action_items": [
     {
       "title": "Approve revised Q1 budget allocation",
-      "owner": "Dvir Ben-Aroya",
+      "owner": "Board of Directors",
       "due_date": "2026-01-15"
     },
     {
@@ -202,7 +205,7 @@ Streaming is designed to be resilient: if the stream breaks due to connectivity,
 #### Example: basic streaming
 
 ```python
-stream = igpt.recall.ask(input="Stream the answer in chunks.", stream=True)
+stream = igpt.recall.ask(input="Summarize my last meeting.", stream=True)
 for chunk in stream:
     if (isinstance(chunk, dict) and chunk.get("error")):
         print("Stream chunk error:", chunk)
@@ -289,7 +292,7 @@ igpt = IGPT(
 * `api_key` (string, required): Your iGPT API key.
 * `user` (string, optional): Default user identifier. If provided, you can omit `user` in method calls.
 * `base_url` (string, optional): Override API base URL (default: `https://api.igpt.ai/v1`).
-* `max_retries` (number, optional): Retry attempts for non-stream requests (default: `3`).
+* `max_retries` (number, optional): Retry attempts (default: `3`).
 * `backoff_base` (number, optional): Initial retry delay in milliseconds (default: `100`).
 * `backoff_factor` (number, optional): Exponential backoff multiplier (default: `2`).
 

@@ -1,5 +1,5 @@
 import aiohttp
-from typing import Optional, AsyncGenerator
+from typing import Optional, AsyncGenerator, Union
 import asyncio
 import json
 from importlib.metadata import version
@@ -9,7 +9,7 @@ class _Recall:
         self._client = client
 
     # ASK
-    async def ask(self, user: Optional[str] = None, **kwargs) -> dict:
+    async def ask(self, user: Optional[str] = None, **kwargs) -> Union[dict, AsyncGenerator[dict, None]]:
         """
         Generate response based on input and context
 
@@ -195,7 +195,7 @@ class IGPTAsync:
                         elif resp.status == 429 or 500 <= resp.status < 600: # Server-side error (429 - Too Many Requests) - retry
                             pass
                         else:
-                            return {"error": resp.reason} # Client-side error - don't retry
+                            return {"error": "client_error"} # Client-side error - don't retry
                 except (aiohttp.ClientError, asyncio.TimeoutError):
                     pass
                 
@@ -237,7 +237,7 @@ class IGPTAsync:
                         elif resp.status == 429 or 500 <= resp.status < 600:
                             pass
                         else:
-                            yield {"error": resp.reason}
+                            yield {"error": "client_error"}
                             return
                 except (aiohttp.ClientError, asyncio.TimeoutError):
                     pass

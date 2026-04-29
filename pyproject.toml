@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "igptai"
-version = "1.1.0"
+version = "1.1.1"
 description = "Official Python SDK for the iGPT API"
 authors = ["iGPT <hello@igpt.ai>"]
 license = "MIT"
 readme = "README.md"
 homepage = "https://www.igpt.ai/"
-repository = "https://github.com/igptai/igpt-python"
+repository = "https://github.com/igptai/igptai-python"
 documentation = "https://docs.igpt.ai"
 keywords = ["igpt", "ai", "igptai", "sdk", "api", "llm", "recall", "datasources"]
 packages = [
