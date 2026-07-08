@@ -8,7 +8,40 @@ class _Recall:
     def __init__(self, client: "IGPTAsync"):
         self._client = client
 
-    # ASK
+    # RUN
+    async def run(self, user: Optional[str] = None, **kwargs) -> Union[dict, AsyncGenerator[dict, None]]:
+        """
+        Agentic Run - generate response based on input and context
+
+        The 'user' parameter is required—either include it in 'params', or set it as default on IGPTAsyncClient initialization.
+
+        Parameters
+        ----------
+        user : (str)
+            a unique identifier representing your end-user
+        input : (str)
+            the question to ask 
+        stream : (bool, optional)
+            if True, stream response, defaults to False
+        quality : (Optional[str], optional)
+            context engineering quality, defaults to None
+        reasoning_effort : (Optional[str], optional)
+            reasoning effort: low, medium, high
+        output_format : (Optional[str], optional)
+            output format: text (default), json or {"schema":{}}
+        instructions : (Optional[str], optional)
+            custom instructions to control output
+        """
+
+        payload = {}
+        payload["user"] = user or self._client.user or None
+        if kwargs:
+            payload.update(kwargs)
+        
+        url = f"{self._client.base_url}/recall/run/"
+        return self._client._stream_request(url, payload) if payload.get("stream") else await self._client._post(url, payload)
+    
+    # ASK [deprecated]
     async def ask(self, user: Optional[str] = None, **kwargs) -> Union[dict, AsyncGenerator[dict, None]]:
         """
         Generate response based on input and context
@@ -54,6 +87,8 @@ class _Recall:
             Filter by start date.  
         date_to : (str)
             Filter by end date.
+        filter_people : (str)
+            filter by people
         max_results : (int)  
             Limit number for results.
         """
