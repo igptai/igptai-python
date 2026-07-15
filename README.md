@@ -630,12 +630,20 @@ Search in connected datasources. [↗](https://docs.igpt.ai/docs/api-reference/s
 * `user` (string, optional if set in constructor): Unique user identifier.
 * `date_from` (string, optional): Start date filter (`YYYY-MM-DD`).
 * `date_to` (string, optional): End date filter (`YYYY-MM-DD`).
+* `filter_people` (string, optional): Restrict results to content involving specific people.
 * `max_results` (number, optional): Limit number of results (e.g., `50`).
 
 #### Example: simple search
 
 ```python
 res = igpt.recall.search(query="board meeting notes")
+print(res)
+```
+
+#### Example: search by people
+
+```python
+res = igpt.recall.search(query="budget allocation", filter_people="Emma", max_results=25)
 print(res)
 ```
 
